@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Magang - Beranda</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 font-sans antialiased text-slate-800 min-h-screen flex flex-col">
+
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[1000] lg:hidden"></div>
+
+    <aside id="sidebar" class="fixed top-0 bottom-0 left-0 z-[1001] w-72 bg-slate-900 text-slate-300 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col shadow-2xl lg:shadow-none">
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm">M</div>
+                <span class="font-bold text-white tracking-wide text-md">MENU MAGANG</span>
+            </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="beranda.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-medium text-sm transition text-white bg-blue-600">
+                <i class="fa-solid fa-house text-lg w-5"></i> Dashboard Beranda
+            </a>
+            <a href="absensi.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-medium text-sm transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-user-clock text-lg w-5"></i> Absensi Datang / Pulang
+            </a>
+            <a href="kegiatan.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-medium text-sm transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-camera text-lg w-5"></i> Jurnal Kerja (Kamera)
+            </a>
+            <div class="pt-4 mt-4 border-t border-slate-800">
+                <button onclick="logout()" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-medium text-sm text-rose-400 hover:bg-rose-500/10 transition cursor-pointer">
+                    <i class="fa-solid fa-arrow-right-from-bracket text-lg w-5"></i> Keluar Sistem
+                </button>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="lg:pl-72 flex flex-col flex-1">
+        <header class="bg-white border-b border-slate-200 px-4 py-4 sticky top-0 flex items-center justify-between z-[900]">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg lg:hidden cursor-pointer"><i class="fa-solid fa-bars text-xl"></i></button>
+                <h1 class="text-md font-bold text-slate-700 hidden sm:block">Sistem Informasi Magang Digital</h1>
+            </div>
+            
+            <button onclick="aksesHalamanAdmin()" class="w-9 h-9 bg-amber-50 border border-amber-300 rounded-xl flex items-center justify-center text-amber-600 hover:bg-amber-100 hover:scale-105 transition shadow-xs cursor-pointer" title="Masuk Admin">
+                <i class="fa-solid fa-user-shield text-sm"></i>
+            </button>
+        </header>
+
+        <main class="p-4 md:p-8 flex-1 max-w-5xl w-full mx-auto">
+            <section class="space-y-6">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 md:p-8 text-white shadow-lg">
+                    <h2 class="text-2xl font-black mb-2">Halo, <span id="namaIntern">Anak Magang</span>! 👋</h2>
+                    <p class="text-blue-100 text-sm max-w-xl">Semangat melaksanakan praktik kerja hari ini. Setiap unggahan laporan foto kegiatan otomatis dilengkapi enkripsi pelacak waktu & koordinat lokasi nyata.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <a href="absensi.html" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-blue-400 transition flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl"><i class="fa-solid fa-clock"></i></div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">Presensi Magang</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Catat kehadiran harian masuk & pulang secara mandiri.</p>
+                        </div>
+                    </a>
+                    <a href="kegiatan.html" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl"><i class="fa-solid fa-camera"></i></div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">Ambil Foto Kegiatan</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Laporkan tugas harian langsung dari Kamera & GPS.</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const activeName = localStorage.getItem('current_intern_name') || 'Anak Magang';
+        document.getElementById('namaIntern').innerText = activeName;
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        }
+
+        // FUNGSI PENGALIRAN KODE KE HALAMAN ADMIN.HTML
+        function aksesHalamanAdmin() {
+            const pass = prompt("Masukkan Password Pengaman Administrator:");
+            if (pass === "admin123") {
+                localStorage.setItem('admin_verified', 'true');
+                window.location.href = "admin.html";
+            } else if (pass !== null) {
+                alert("Password Salah!");
+            }
+        }
+
+        function logout() {
+            if(confirm("Apakah Anda yakin ingin keluar?")) window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
