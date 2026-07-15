@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrator - Laporan Magang</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans antialiased text-slate-800 min-h-screen flex flex-col">
+
+    <div id="modalTambahUser" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[2000] flex items-center justify-center p-4 animate-fade-in">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md overflow-hidden transform scale-95 transition-all duration-300">
+            <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-amber-500"></i>
+                    <h3 class="text-sm font-bold tracking-wide uppercase">Tambah Akun Magang Baru</h3>
+                </div>
+                <button onclick="tutupModalUser()" class="text-slate-400 hover:text-white transition cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form id="formTambahUser" class="p-6 space-y-4" onsubmit="simpanUserBaruPopUp(event)">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Username Login</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-at"></i></span>
+                        <input type="text" id="popUsername" placeholder="Contoh: budisupardi" required class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 bg-slate-50 transition">
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Gunakan huruf kecil dan tanpa spasi.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nama Lengkap Anak Magang</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="popNama" placeholder="Masukkan nama lengkap siswa" required class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 bg-slate-50 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Password Akun</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="popPassword" placeholder="Buat kata sandi akun" required class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 bg-slate-50 transition">
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="tutupModalUser()" class="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer text-center">Batal</button>
+                    <button type="submit" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer text-center shadow-sm">Simpan Akun</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEditUser" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[2000] flex items-center justify-center p-4 animate-fade-in">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md overflow-hidden transform scale-95 transition-all duration-300">
+            <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-user-gear text-amber-500"></i>
+                    <h3 class="text-sm font-bold tracking-wide uppercase">Ubah Data Akun Magang</h3>
+                </div>
+                <button onclick="tutupModalEditUser()" class="text-slate-400 hover:text-white transition cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form id="formEditUser" class="p-6 space-y-4" onsubmit="simpanPerubahanUser(event)">
+                <input type="hidden" id="editIndex">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Username (Tidak Dapat Diubah)</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-at"></i></span>
+                        <input type="text" id="editUsername" disabled class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-xs bg-slate-100 text-slate-400 cursor-not-allowed font-mono">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nama Lengkap Anak Magang</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="editNama" required class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 bg-slate-50 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Password Akun Baru</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-lock"></i></span>
+                        <input type="text" id="editPassword" required class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 bg-slate-50 transition">
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="tutupModalEditUser()" class="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer text-center">Batal</button>
+                    <button type="submit" class="w-1/2 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer text-center shadow-sm">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <header class="bg-slate-900 text-white px-6 py-4 sticky top-0 flex items-center justify-between z-[900] shadow-md">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center text-slate-900 font-black text-sm">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div>
+                <h1 class="text-sm font-bold tracking-wide">PANEL ADMINISTRATOR</h1>
+                <p class="text-[10px] text-slate-400">Monitoring Absensi & Jurnal Kegiatan Magang</p>
+            </div>
+        </div>
+        <a href="beranda.html" class="px-3 py-1.5 bg-slate-800 text-slate-300 hover:text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 border border-slate-700">
+            <i class="fa-solid fa-house"></i> Kembali ke Beranda
+        </a>
+    </header>
+
+    <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 flex flex-col gap-6">
+        
+        <div class="flex gap-2 border-b border-slate-200 pb-px">
+            <button id="btnTabAbsen" onclick="gantiTabAdmin('absen')" class="px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-blue-600 text-blue-600 transition cursor-pointer">
+                <i class="fa-solid fa-clipboard-user mr-1.5"></i> Rekap Absensi
+            </button>
+            <button id="btnTabJurnal" onclick="gantiTabAdmin('jurnal')" class="px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition cursor-pointer">
+                <i class="fa-solid fa-book mr-1.5"></i> Jurnal Kerja
+            </button>
+            <button id="btnTabUser" onclick="gantiTabAdmin('user')" class="px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition cursor-pointer">
+                <i class="fa-solid fa-users mr-1.5"></i> Kelola User Magang
+            </button>
+        </div>
+
+        <main class="flex-1">
+            <div id="kontenTabAbsen" class="space-y-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                        <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide">Log Riwayat Presensi Masuk & Pulang</h2>
+                        <button onclick="hapusSemuaAbsen()" class="px-3 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[11px] font-bold border border-rose-200 rounded-lg transition cursor-pointer">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Bersihkan Data Absen
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase tracking-wider font-bold">
+                                    <th class="p-3 w-16">Foto</th>
+                                    <th class="p-3">Nama Siswa</th>
+                                    <th class="p-3">Waktu & GPS Lokasi</th>
+                                    <th class="p-3 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelAdminAbsenBody" class="divide-y divide-slate-100 text-slate-600">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="kontenTabJurnal" class="hidden space-y-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                        <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide">Log Pengumpulan Jurnal Harian</h2>
+                        <button onclick="hapusSemuaJurnal()" class="px-3 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[11px] font-bold border border-rose-200 rounded-lg transition cursor-pointer">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Bersihkan Data Jurnal
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase tracking-wider font-bold">
+                                    <th class="p-3 w-20">Foto Tugas</th>
+                                    <th class="p-3 w-40">Nama & Waktu</th>
+                                    <th class="p-3">Deskripsi Aktivitas</th>
+                                    <th class="p-3">Keterangan GPS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelAdminJurnalBody" class="divide-y divide-slate-100 text-slate-600">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="kontenTabUser" class="hidden space-y-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                        <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide">Daftar Akun Login Magang</h2>
+                        <button onclick="bukaModalUser()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold rounded-lg transition cursor-pointer flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Tambah User Baru
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase tracking-wider font-bold">
+                                    <th class="p-3">Username</th>
+                                    <th class="p-3">Nama Lengkap</th>
+                                    <th class="p-3">Password</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelAdminUserBody" class="divide-y divide-slate-100 text-slate-600">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Cek Keamanan Hak Akses Verifikasi Admin
+        if (localStorage.getItem('admin_verified') !== 'true') {
+            alert('Akses Ditolak! Anda harus memasukkan gerbang pengaman terlebih dahulu.');
+            window.location.href = 'beranda.html';
+        }
+
+        // Fungsi Perpindahan Tab Menu Admin
+        function gantiTabAdmin(kategori) {
+            const tabAbsen = document.getElementById('kontenTabAbsen');
+            const tabJurnal = document.getElementById('kontenTabJurnal');
+            const tabUser = document.getElementById('kontenTabUser');
+            
+            const btnAbsen = document.getElementById('btnTabAbsen');
+            const btnJurnal = document.getElementById('btnTabJurnal');
+            const btnUser = document.getElementById('btnTabUser');
+
+            tabAbsen.classList.add('hidden');
+            tabJurnal.classList.add('hidden');
+            tabUser.classList.add('hidden');
+            
+            btnAbsen.className = "px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition cursor-pointer";
+            btnJurnal.className = "px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition cursor-pointer";
+            btnUser.className = "px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition cursor-pointer";
+
+            if (kategori === 'absen') {
+                tabAbsen.classList.remove('hidden');
+                btnAbsen.className = "px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-blue-600 text-blue-600 transition cursor-pointer";
+                muatRekapAbsen();
+            } else if (kategori === 'jurnal') {
+                tabJurnal.classList.remove('hidden');
+                btnJurnal.className = "px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-blue-600 text-blue-600 transition cursor-pointer";
+                muatRekapJurnal();
+            } else if (kategori === 'user') {
+                tabUser.classList.remove('hidden');
+                btnUser.className = "px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-blue-600 text-blue-600 transition cursor-pointer";
+                muatSemuaUser();
+            }
+        }
+
+        // FUNGSI LOAD DATA ABSENSI
+        function muatRekapAbsen() {
+            const tbody = document.getElementById('tabelAdminAbsenBody');
+            let absensiDB = JSON.parse(localStorage.getItem('absensi_rekap_magang')) || [];
+
+            tbody.innerHTML = '';
+            if (absensiDB.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center italic text-slate-400 bg-slate-50/50">Belum ada data presensi siswa magang masuk ke sistem.</td></tr>`;
+                return;
+            }
+
+            absensiDB.forEach(item => {
+                const badge = item.tipe === 'MASUK' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200';
+                const cetakGps = item.gps || "Lokasi Terkunci Jaringan";
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-3"><img src="${item.foto}" class="w-12 h-12 object-cover rounded-lg border border-slate-200 shadow-2xs"></td>
+                        <td class="p-3 font-bold text-slate-700">${item.nama}</td>
+                        <td class="p-3 text-slate-500">
+                            <span class="font-semibold text-slate-700">${item.tanggal} - ${item.jam}</span>
+                            <span class="text-[10px] text-amber-600 font-mono block max-w-sm truncate mt-0.5"><i class="fa-solid fa-location-dot mr-1"></i>${cetakGps}</span>
+                        </td>
+                        <td class="p-3"><span class="px-2 py-1 rounded-md text-[10px] font-black border uppercase ${badge}">${item.tipe}</span></td>
+                    </tr>`;
+            });
+        }
+
+        // FUNGSI LOAD DATA JURNAL KEGIATAN
+        function muatRekapJurnal() {
+            const tbody = document.getElementById('tabelAdminJurnalBody');
+            let kegiatanDB = JSON.parse(localStorage.getItem('kegiatan_rekap_magang')) || [];
+
+            tbody.innerHTML = '';
+            if (kegiatanDB.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center italic text-slate-400 bg-slate-50/50">Belum ada pelaporan berkas jurnal harian hari ini.</td></tr>`;
+                return;
+            }
+
+            kegiatanDB.forEach(item => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-3"><img src="${item.foto}" class="w-16 h-12 object-cover rounded-lg border border-slate-200 shadow-2xs"></td>
+                        <td class="p-3">
+                            <span class="font-bold text-slate-700 block">${item.nama}</span>
+                            <span class="text-[10px] font-mono text-slate-400 block mt-0.5">${item.tanggal} | ${item.jam}</span>
+                        </td>
+                        <td class="p-3 text-slate-600 font-medium leading-relaxed max-w-md break-words">${item.kegiatan}</td>
+                        <td class="p-3 text-[10px] text-amber-600 max-w-xs truncate font-mono"><i class="fa-solid fa-location-dot mr-1"></i>${item.gps || "Tanpa Meta-GPS"}</td>
+                    </tr>`;
+            });
+        }
+
+        // ================= SEKTOR MANAJEMEN USER CRUD CORNER =================
+        function muatSemuaUser() {
+            const tbody = document.getElementById('tabelAdminUserBody');
+            let usersDB = JSON.parse(localStorage.getItem('users_db')) || [];
+
+            tbody.innerHTML = '';
+            if (usersDB.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center italic text-slate-400 bg-slate-50/50">Belum ada data user terdaftar.</td></tr>`;
+                return;
+            }
+
+            usersDB.forEach((user, index) => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-3 font-mono font-bold text-blue-600">${user.username}</td>
+                        <td class="p-3 font-bold text-slate-700">${user.nama}</td>
+                        <td class="p-3 font-mono text-slate-400">${user.password}</td>
+                        <td class="p-3 text-center space-x-2 whitespace-nowrap">
+                            <button onclick="editUser(${index})" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-600 font-bold border border-amber-200 rounded-md transition cursor-pointer text-[10px]"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                            <button onclick="hapusUser(${index})" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold border border-rose-200 rounded-md transition cursor-pointer text-[10px]"><i class="fa-solid fa-trash"></i> Hapus</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        // --- SISTEM KONTROL POP-UP DIALOG TAMBAH USER ---
+        function bukaModalUser() {
+            document.getElementById('modalTambahUser').classList.remove('hidden');
+            document.getElementById('formTambahUser').reset();
+            document.getElementById('popUsername').focus();
+        }
+
+        /* Perbaikan: fungsi pisah tutup modal edit & tambah */
+        function tutupModalUser() {
+            document.getElementById('modalTambahUser').classList.add('hidden');
+        }
+
+        function simpanUserBaruPopUp(event) {
+            event.preventDefault();
+
+            const usernameInput = document.getElementById('popUsername').value.trim();
+            const namaInput = document.getElementById('popNama').value.trim();
+            const passwordInput = document.getElementById('popPassword').value;
+
+            let usersDB = JSON.parse(localStorage.getItem('users_db')) || [];
+            
+            if (usersDB.some(u => u.username.toLowerCase() === usernameInput.toLowerCase())) {
+                alert("🚨 GAGAL!\nUsername '" + usernameInput + "' sudah terdaftar sebelumnya. Silakan gunakan ID username unik lainnya.");
+                return;
+            }
+
+            usersDB.push({ 
+                username: usernameInput, 
+                password: passwordInput, 
+                nama: namaInput 
+            });
+
+            localStorage.setItem('users_db', JSON.stringify(usersDB));
+            tutupModalUser();
+            muatSemuaUser();
+            alert("✨ Berhasil!\nAkun login untuk " + namaInput + " telah sukses ditambahkan ke sistem.");
+        }
+
+        // --- SISTEM KONTROL POP-UP DIALOG EDIT USER (BARU) ---
+        function editUser(index) {
+            let usersDB = JSON.parse(localStorage.getItem('users_db')) || [];
+            const user = usersDB[index];
+
+            // Masukkan data lama ke dalam Input Form Modal Edit
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editUsername').value = user.username;
+            document.getElementById('editNama').value = user.nama;
+            document.getElementById('editPassword').value = user.password;
+
+            // Munculkan Modal Edit
+            document.getElementById('modalEditUser').classList.remove('hidden');
+            document.getElementById('editNama').focus();
+        }
+
+        function tutupModalEditUser() {
+            document.getElementById('modalEditUser').classList.add('hidden');
+        }
+
+        function simpanPerubahanUser(event) {
+            event.preventDefault();
+
+            const index = document.getElementById('editIndex').value;
+            const namaBaru = document.getElementById('editNama').value.trim();
+            const passBaru = document.getElementById('editPassword').value;
+
+            let usersDB = JSON.parse(localStorage.getItem('users_db')) || [];
+
+            // Update database lokal
+            usersDB[index].nama = namaBaru || usersDB[index].nama;
+            usersDB[index].password = passBaru || usersDB[index].password;
+
+            localStorage.setItem('users_db', JSON.stringify(usersDB));
+            
+            tutupModalEditUser();
+            muatSemuaUser();
+            alert("✨ Sukses!\nData user berhasil diperbarui!");
+        }
+
+        function hapusUser(index) {
+            let usersDB = JSON.parse(localStorage.getItem('users_db')) || [];
+            if (usersDB[index].username === 'admin') {
+                alert("Akun utama 'admin' tidak boleh dihapus!");
+                return;
+            }
+
+            if (confirm(`Apakah Anda yakin ingin menghapus akun user "${usersDB[index].nama}"?`)) {
+                usersDB.splice(index, 1);
+                localStorage.setItem('users_db', JSON.stringify(usersDB));
+                muatSemuaUser();
+            }
+        }
+
+        // Fungsi Pembersih Log Total Massal
+        function hapusSemuaAbsen() {
+            if (confirm("Apakah Anda yakin ingin menghapus seluruh data rekap absensi anak magang?")) {
+                localStorage.removeItem('absensi_rekap_magang');
+                muatRekapAbsen();
+            }
+        }
+
+        function hapusSemuaJurnal() {
+            if (confirm("Apakah Anda yakin ingin menghapus seluruh riwayat foto jurnal kegiatan anak magang?")) {
+                localStorage.removeItem('kegiatan_rekap_magang');
+                muatRekapJurnal();
+            }
+        }
+
+        window.onload = function() {
+            muatRekapAbsen();
+        }
+    </script>
+</body>
+</html>
