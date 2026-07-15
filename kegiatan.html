@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jurnal Kerja Magang</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 font-sans antialiased text-slate-800 min-h-screen flex flex-col">
+
+    <div id="loading" class="hidden fixed inset-0 bg-white/80 backdrop-blur-sm z-[3000] flex flex-col items-center justify-center">
+        <div class="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-3"></div>
+        <p id="loadingText" class="font-bold text-slate-600 animate-pulse text-sm">Mengunci Autentikasi Waktu & GPS...</p>
+    </div>
+
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[1000] lg:hidden"></div>
+
+    <aside id="sidebar" class="fixed top-0 bottom-0 left-0 z-[1001] w-72 bg-slate-900 text-slate-300 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col shadow-2xl lg:shadow-none">
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm">M</div>
+                <span class="font-bold text-white tracking-wide text-md">MENU MAGANG</span>
+            </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="beranda.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-medium text-sm transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-house text-lg w-5"></i> Dashboard Beranda
+            </a>
+            <a href="absensi.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-medium text-sm transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-user-clock text-lg w-5"></i> Absensi Datang / Pulang
+            </a>
+            <a href="kegiatan.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-medium text-sm transition text-white bg-blue-600">
+                <i class="fa-solid fa-camera text-lg w-5"></i> Jurnal Kerja (Kamera)
+            </a>
+        </nav>
+    </aside>
+
+    <div class="lg:pl-72 flex flex-col flex-1">
+        <header class="bg-white border-b border-slate-200 px-4 py-4 sticky top-0 flex items-center justify-between z-[900]">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg lg:hidden cursor-pointer"><i class="fa-solid fa-bars text-xl"></i></button>
+                <h1 class="text-md font-bold text-slate-700">Input Laporan Harian</h1>
+            </div>
+        </header>
+
+        <main class="p-4 md:p-8 flex-1 max-w-5xl w-full mx-auto">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="border-b border-slate-100 pb-2 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-camera mr-2 text-emerald-600"></i>Kirim Jurnal Kegiatan</h2>
+                    <span class="px-2.5 py-1 bg-amber-50 text-amber-700 font-bold border border-amber-200 rounded-lg text-[10px] uppercase tracking-wide"><i class="fa-solid fa-satellite mr-1"></i>GPS Aktif</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jendela Kamera Aktif (Kamera Kerja)</label>
+                        <div class="w-full bg-slate-900 rounded-2xl overflow-hidden aspect-video border border-slate-800 relative">
+                            <video id="videoKegiatan" autoplay playsinline class="w-full h-full object-cover scale-x-[-1]"></video>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Foto Terjepret</label>
+                        <div class="w-full bg-slate-100 rounded-2xl flex items-center justify-center border border-slate-200 aspect-video overflow-hidden">
+                            <img id="imgPreviewKegiatan" class="hidden w-full h-full object-cover">
+                            <span id="placeholderKegiatan" class="text-xs text-slate-400 italic">Tekan tombol ambil gambar di bawah</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="formKegiatan" class="space-y-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Rincian Kegiatan</label>
+                        <textarea id="deskripsiKegiatan" rows="3" placeholder="Tuliskan secara jelas progres tugas/pekerjaan yang Anda lakukan hari ini..." required class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 transition focus:outline-blue-500"></textarea>
+                    </div>
+                    <button type="button" onclick="ambilDanProsesJurnal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer shadow-md">Ambil Foto & Kirim Jurnal (GPS Watermark)</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <canvas id="canvasKegiatan" class="hidden"></canvas>
+
+    <script>
+        const activeName = localStorage.getItem('current_intern_name') || 'Anak Magang';
+        let localStream = null;
+        let lastUserPosition = null;
+
+        const LOKASI_WORKSHOP = [
+            {
+                nama: "Workshop 1 (Tasikharjo)",
+                lat: -6.771118, 
+                lon: 111.943481, 
+                alamatText: "Workshop 1: Awar Awar, Tasikharjo, Kec. Jenu, Kabupaten Tuban, Jawa Timur 62352"
+            },
+            {
+                nama: "Workshop 2 (Temandang)",
+                lat: -6.936312,
+                lon: 111.996150,
+                alamatText: "Workshop 2: Jalan Tlogowuni, Temandang, Merakurak, Tuban Regency, East Java 62355"
+            }
+        ];
+        
+        const RADIUS_MAKSIMAL_METER = 150; 
+
+        function hitungJarakMeter(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; 
+            const phi1 = lat1 * Math.PI / 180;
+            const phi2 = lat2 * Math.PI / 180;
+            const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+            const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+            const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                      Math.cos(phi1) * Math.cos(phi2) *
+                      Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c; 
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        }
+
+        async function startCamera() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "user" },
+                    audio: false
+                });
+                document.getElementById('videoKegiatan').srcObject = localStream;
+            } catch (err) {
+                alert("Gagal mengakses kamera depan. Periksa izin akses browser Anda.");
+                console.error(err);
+            }
+        }
+
+        function startTrackingLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(
+                    (position) => {
+                        lastUserPosition = position;
+                    },
+                    (error) => {
+                        console.warn("Sedang mencari sinyal satelit GPS...", error);
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            }
+        }
+
+        async function ambilDanProsesJurnal() {
+            const video = document.getElementById('videoKegiatan');
+            const canvas = document.getElementById('canvasKegiatan');
+            const deskripsi = document.getElementById('deskripsiKegiatan').value.trim();
+
+            if (!localStream) { alert("Kamera belum menyala!"); return; }
+            if (!deskripsi) { alert("Harap isi deskripsi laporan rincian kegiatan terlebih dahulu!"); return; }
+
+            document.getElementById('loadingText').innerText = "Validasi Koordinat Lokasi PT Tashan...";
+            document.getElementById('loading').classList.remove('hidden');
+
+            canvas.width = 600;
+            canvas.height = video.videoHeight * (600 / video.videoWidth) || 450;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+            if (lastUserPosition) {
+                eksekusiValidasiJurnal(lastUserPosition.coords.latitude, lastUserPosition.coords.longitude, canvas, ctx, deskripsi);
+            } else if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        lastUserPosition = position;
+                        eksekusiValidasiJurnal(position.coords.latitude, position.coords.longitude, canvas, ctx, deskripsi);
+                    },
+                    (error) => {
+                        document.getElementById('loading').classList.add('hidden');
+                        alert("🚨 PENGIRIMAN GAGAL!\nBrowser memblokir sensor lokasi perangkat atau GPS Anda mati.");
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            } else {
+                document.getElementById('loading').classList.add('hidden');
+                alert("Perangkat Anda tidak mendukung fitur pemetaan koordinat GPS.");
+            }
+        }
+
+        function eksekusiValidasiJurnal(userLat, userLon, canvas, ctx, deskripsi) {
+            let lokasiDitemukan = null;
+            let jarakTerkecil = Infinity;
+
+            for (const workshop of LOKASI_WORKSHOP) {
+                const jarak = hitungJarakMeter(userLat, userLon, workshop.lat, workshop.lon);
+                if (jarak <= RADIUS_MAKSIMAL_METER) {
+                    lokasiDitemukan = workshop;
+                    break;
+                }
+                if (jarak < jarakTerkecil) {
+                    jarakTerkecil = jarak;
+                }
+            }
+
+            if (!lokasiDitemukan) {
+                document.getElementById('loading').classList.add('hidden');
+                alert(`🚨 AKSES DITOLAK!\nAnda terdeteksi berada di luar area PT Tashan.\n\nJarak Anda saat ini: ${Math.round(jarakTerkecil)} meter dari area resmi.\nSistem mendeteksi Anda mencoba mengisi dari luar lokasi kantor.`);
+                return; 
+            }
+
+            buatWatermarkJurnal(canvas, ctx, deskripsi, lokasiDitemukan.alamatText);
+        }
+
+        function buatWatermarkJurnal(canvas, ctx, deskripsi, infoGPS) {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+            ctx.fillRect(0, canvas.height - 95, canvas.width, 95);
+
+            const tglString = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+            const jamString = new Date().toLocaleTimeString('id-ID') + " WIB";
+
+            ctx.fillStyle = "#ffffff"; 
+            ctx.font = "bold 13px Arial";
+            ctx.fillText(`🕒 WAKTU NYATA: ${tglString} | ${jamString}`, 20, canvas.height - 60);
+            
+            ctx.fillStyle = "#facc15"; 
+            ctx.font = "bold 11px Arial";
+            
+            let displayAlamat = infoGPS;
+            if (displayAlamat.length > 75) {
+                displayAlamat = displayAlamat.substring(0, 72) + "...";
+            }
+            ctx.fillText(`📍 ALAMAT: ${displayAlamat}`, 20, canvas.height - 30);
+
+            const dataFotoWatermark = canvas.toDataURL('image/jpeg', 0.8);
+
+            document.getElementById('imgPreviewKegiatan').src = dataFotoWatermark;
+            document.getElementById('imgPreviewKegiatan').classList.remove('hidden');
+            document.getElementById('placeholderKegiatan').classList.add('hidden');
+
+            let kegiatanDB = JSON.parse(localStorage.getItem('kegiatan_rekap_magang')) || [];
+            kegiatanDB.unshift({ nama: activeName, kegiatan: deskripsi, tanggal: tglString, jam: jamString, gps: infoGPS, foto: dataFotoWatermark });
+            localStorage.setItem('kegiatan_rekap_magang', JSON.stringify(kegiatanDB));
+
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+                alert("Jurnal Kegiatan Berhasil Disimpan!");
+                window.location.href = "beranda.html";
+            }, 600);
+        }
+
+        window.onload = function() { 
+            startCamera(); 
+            startTrackingLocation();
+        }
+    </script>
+</body>
+</html>
