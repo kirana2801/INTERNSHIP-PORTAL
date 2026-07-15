@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Magang</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 font-sans antialiased text-slate-800 min-h-screen flex flex-col">
+
+    <div id="loading" class="hidden fixed inset-0 bg-white/80 backdrop-blur-sm z-[3000] flex flex-col items-center justify-center">
+        <div class="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-3"></div>
+        <p id="loadingText" class="font-bold text-slate-600 animate-pulse text-sm">Menyimpan Presensi...</p>
+    </div>
+
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[1000] lg:hidden"></div>
+
+    <aside id="sidebar" class="fixed top-0 bottom-0 left-0 z-[1001] w-72 bg-slate-900 text-slate-300 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col shadow-2xl lg:shadow-none">
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm">M</div>
+                <span class="font-bold text-white tracking-wide text-md">MENU MAGANG</span>
+            </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="beranda.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-medium text-sm transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-house text-lg w-5"></i> Dashboard Beranda
+            </a>
+            <a href="absensi.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-medium text-sm transition text-white bg-blue-600">
+                <i class="fa-solid fa-user-clock text-lg w-5"></i> Absensi Datang / Pulang
+            </a>
+            <a href="kegiatan.html" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-medium text-sm transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-camera text-lg w-5"></i> Jurnal Kerja (Kamera)
+            </a>
+        </nav>
+    </aside>
+
+    <div class="lg:pl-72 flex flex-col flex-1">
+        <header class="bg-white border-b border-slate-200 px-4 py-4 sticky top-0 flex items-center justify-between z-[900]">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg lg:hidden cursor-pointer"><i class="fa-solid fa-bars text-xl"></i></button>
+                <h1 class="text-md font-bold text-slate-700">Pencatatan Kehadiran Harian</h1>
+            </div>
+        </header>
+
+        <main class="p-4 md:p-8 flex-1 max-w-5xl w-full mx-auto space-y-6">
+            <div class="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-xs font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-sm text-amber-600"></i>
+                Pastikan memberikan izin akses lokasi (GPS) dan kamera perangkat agar absensi divalidasi dengan sukses.
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+                    <h2 class="text-md font-bold text-slate-700 mb-3 border-b border-slate-100 pb-2 flex justify-between items-center">
+                        <span><i class="fa-solid fa-video mr-2 text-blue-600"></i>Kamera Live (Swafoto)</span>
+                        <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold rounded text-[9px] uppercase"><i class="fa-solid fa-location-crosshairs mr-0.5"></i>Radius Aktif</span>
+                    </h2>
+                    <div class="relative w-full bg-slate-900 rounded-xl overflow-hidden aspect-video border border-slate-800">
+                        <video id="videoAbsen" autoplay playsinline class="w-full h-full object-cover scale-x-[-1]"></video>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <button onclick="prosesValidasiAbsen('MASUK')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer text-center shadow-sm">Absen Masuk</button>
+                        <button onclick="prosesValidasiAbsen('PULANG')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer text-center shadow-sm">Absen Pulang</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-md font-bold text-slate-700 mb-3 border-b border-slate-100 pb-2"><i class="fa-solid fa-image mr-2 text-purple-600"></i>Preview Hasil Foto</h2>
+                        <div class="w-full bg-slate-100 rounded-xl flex items-center justify-center border border-slate-200 aspect-video overflow-hidden">
+                            <img id="imgPreviewAbsen" class="hidden w-full h-full object-cover">
+                            <span id="textPlaceholder" class="text-xs text-slate-400 italic">Belum ada foto yang diambil</span>
+                        </div>
+                    </div>
+                    <div id="infoFotoStatus" class="mt-4 text-center hidden text-xs font-bold text-emerald-600 bg-emerald-50 py-3 rounded-xl border border-emerald-200 animate-pulse">
+                        <i class="fa-solid fa-circle-check mr-1"></i> Data Berhasil Disimpan Ke Rekap!
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h2 class="text-sm font-bold text-slate-700 mb-4">Riwayat Kehadiran Anda</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase tracking-wider font-bold">
+                                <th class="p-3">Bukti Foto</th>
+                                <th class="p-3">Keterangan / Alamat GPS</th>
+                                <th class="p-3">Waktu Log</th>
+                                <th class="p-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelAbsenBody" class="divide-y divide-slate-100 text-slate-600"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <canvas id="canvasAbsen" class="hidden"></canvas>
+
+    <script>
+        const activeName = localStorage.getItem('current_intern_name') || 'Anak Magang';
+        let localStream = null;
+        let lastUserPosition = null; 
+
+        const LOKASI_WORKSHOP = [
+            {
+                nama: "Workshop 1 (Tasikharjo)",
+                lat: -6.771118,
+                lon: 111.943481,
+                alamatText: "Workshop 1: Awar Awar, Tasikharjo, Kec. Jenu, Kabupaten Tuban, Jawa Timur 62352"
+            },
+            {
+                nama: "Workshop 2 (Temandang)",
+                lat: -6.936312,
+                lon: 111.996150,
+                alamatText: "Workshop 2: Jalan Tlogowuni, Temandang, Merakurak, Tuban Regency, East Java 62355"
+            }
+        ];
+        
+        const RADIUS_MAKSIMAL_METER = 150; 
+
+        function hitungJarakMeter(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; 
+            const phi1 = lat1 * Math.PI / 180;
+            const phi2 = lat2 * Math.PI / 180;
+            const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+            const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+            const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                      Math.cos(phi1) * Math.cos(phi2) *
+                      Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c; 
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        }
+
+        async function startCamera() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "user" }, 
+                    audio: false
+                });
+                document.getElementById('videoAbsen').srcObject = localStream;
+            } catch (err) {
+                alert("Gagal membuka kamera. Harap izinkan akses kamera pada browser Anda.");
+                console.error(err);
+            }
+        }
+
+        function startTrackingLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(
+                    (position) => {
+                        lastUserPosition = position;
+                    },
+                    (error) => {
+                        console.warn("Sedang mencari sinyal satelit GPS...", error);
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            }
+        }
+
+        function prosesValidasiAbsen(tipe) {
+            if (!localStream) { alert("Kamera belum siap!"); return; }
+
+            document.getElementById('loadingText').innerText = `Memverifikasi Lokasi Radius GPS Untuk Absen ${tipe}...`;
+            document.getElementById('loading').classList.remove('hidden');
+
+            if (lastUserPosition) {
+                eksekusiPengecekanJarak(lastUserPosition.coords.latitude, lastUserPosition.coords.longitude, tipe);
+            } else if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        lastUserPosition = position;
+                        eksekusiPengecekanJarak(position.coords.latitude, position.coords.longitude, tipe);
+                    },
+                    (error) => {
+                        document.getElementById('loading').classList.add('hidden');
+                        alert("🚨 ABSENSI GAGAL!\nBrowser memblokir sensor lokasi perangkat atau GPS mati. Izinkan akses GPS dan segarkan halaman.");
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            } else {
+                document.getElementById('loading').classList.add('hidden');
+                alert("Perangkat Anda tidak mendukung fitur pemetaan koordinat GPS.");
+            }
+        }
+
+        function eksekusiPengecekanJarak(userLat, userLon, tipe) {
+            let lokasiDitemukan = null;
+            let jarakTerkecil = Infinity;
+
+            for (const workshop of LOKASI_WORKSHOP) {
+                const jarak = hitungJarakMeter(userLat, userLon, workshop.lat, workshop.lon);
+                if (jarak <= RADIUS_MAKSIMAL_METER) {
+                    lokasiDitemukan = workshop;
+                    break;
+                }
+                if (jarak < jarakTerkecil) {
+                    jarakTerkecil = jarak;
+                }
+            }
+
+            if (!lokasiDitemukan) {
+                document.getElementById('loading').classList.add('hidden');
+                alert(`🚨 ABSENSI DITOLAK!\nAnda berada di luar area kantor PT Tasha Indonesia.\n\nJarak Anda saat ini: ${Math.round(jarakTerkecil)} meter dari area resmi.\nPastikan Anda mengabsen dari dalam lingkungan workshop.`);
+                return;
+            }
+
+            simpanFotoAbsen(tipe, lokasiDitemukan.alamatText);
+        }
+
+        function simpanFotoAbsen(tipe, infoGPS) {
+            const video = document.getElementById('videoAbsen');
+            const canvas = document.getElementById('canvasAbsen');
+            const imgPreview = document.getElementById('imgPreviewAbsen');
+            const placeholder = document.getElementById('textPlaceholder');
+
+            canvas.width = video.videoWidth || 480;
+            canvas.height = video.videoHeight || 360;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+            const dataBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+            imgPreview.src = dataBase64;
+            imgPreview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+
+            const tgl = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const jam = new Date().toLocaleTimeString('id-ID');
+
+            let absensiDB = JSON.parse(localStorage.getItem('absensi_rekap_magang')) || [];
+            absensiDB.unshift({ nama: activeName, tipe: tipe, tanggal: tgl, jam: jam, foto: dataBase64, gps: infoGPS });
+            localStorage.setItem('absensi_rekap_magang', JSON.stringify(absensiDB));
+
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('infoFotoStatus').classList.remove('hidden');
+                muatDataAbsen();
+                alert(`Absen ${tipe} Berhasil disimpan!\nLokasi terverifikasi: ${infoGPS}`);
+                setTimeout(() => document.getElementById('infoFotoStatus').classList.add('hidden'), 3000);
+            }, 600);
+        }
+
+        function muatDataAbsen() {
+            const tbody = document.getElementById('tabelAbsenBody');
+            let absensiDB = JSON.parse(localStorage.getItem('absensi_rekap_magang')) || [];
+            let dataSaya = absensiDB.filter(i => i.nama === activeName);
+
+            tbody.innerHTML = '';
+            if(dataSaya.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center italic text-slate-400 bg-slate-50/50">Belum ada riwayat absensi.</td></tr>`;
+                return;
+            }
+            dataSaya.forEach(item => {
+                const badgeColor = item.tipe === 'MASUK' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200';
+                const cetakGps = item.gps || "Lokasi Terkunci Sistem";
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="p-3"><img src="${item.foto}" class="w-10 h-10 object-cover rounded-lg border border-slate-200"></td>
+                        <td class="p-3 text-slate-700">
+                            <span class="font-semibold block">Absen Harian</span>
+                            <span class="text-[10px] text-slate-400 block max-w-xs truncate"><i class="fa-solid fa-location-dot mr-1 text-amber-500"></i>${cetakGps}</span>
+                        </td>
+                        <td class="p-3 text-slate-500">${item.tanggal}<br/><span class="font-mono text-slate-400">${item.jam}</span></td>
+                        <td class="p-3"><span class="px-2 py-1 rounded-md text-[10px] font-black border ${badgeColor}">${item.tipe}</span></td>
+                    </tr>`;
+            });
+        }
+
+        window.onload = function() {
+            startCamera();
+            startTrackingLocation();
+            muatDataAbsen();
+        }
+    </script>
+</body>
+</html>
