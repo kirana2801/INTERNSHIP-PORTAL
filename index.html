@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Portal Magang Smart</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans antialiased text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row w-full max-w-4xl min-h-[500px]">
+        
+        <div class="w-full md:w-1/2 bg-gradient-to-br from-blue-600 to-indigo-800 text-white p-6 md:p-10 flex flex-col justify-between items-center md:items-start text-center md:text-left gap-6">
+            
+            <div class="flex flex-col items-center md:items-start gap-3 w-full">
+                <div class="bg-white p-2 rounded-xl shadow-md inline-block">
+                    <img src="logopt.jpg" alt="Logo PT Tasha" class="h-10 md:h-12 object-contain">
+                </div>
+                <span class="text-xs font-bold tracking-widest text-blue-200 uppercase mt-2">INTERNSHIP PORTAL</span>
+            </div>
+
+            <div class="space-y-3 my-auto">
+                <h1 class="text-2xl md:text-3xl font-black tracking-tight leading-tight">
+                    Sistem Presensi & Jurnal Digital
+                </h1>
+                <p class="text-xs md:text-sm text-blue-100 leading-relaxed max-w-sm">
+                    Selamat datang di aplikasi pelaporan magang pintar PT Tasha. Silakan masuk untuk mengakses dashboard Anda.
+                </p>
+            </div>
+
+            <div class="w-full pt-4 border-t border-blue-500/30 flex items-center justify-center md:justify-start gap-2 text-[11px] text-blue-200">
+                <i class="fa-solid fa-location-crosshairs text-amber-400"></i>
+                <span>Otentikasi GPS & Waktu Nyata</span>
+            </div>
+        </div>
+
+        <div class="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center">
+            <div class="mb-6 text-center md:text-left">
+                <h2 class="text-xl md:text-2xl font-bold text-slate-800">Silahkan Masuk</h2>
+                <p class="text-xs text-slate-400 mt-1">Gunakan Username dan Password terdaftar Anda.</p>
+            </div>
+
+            <form class="space-y-4" onsubmit="event.preventDefault(); window.location.href='beranda.html';">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Username Akun</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="fa-solid fa-user text-sm"></i>
+                        </span>
+                        <input type="text" placeholder="Masukkan username Anda" required 
+                            class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 bg-slate-50 focus:bg-white transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="fa-solid fa-lock text-sm"></i>
+                        </span>
+                        <input type="password" placeholder="Masukkan password Anda" required 
+                            class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 bg-slate-50 focus:bg-white transition">
+                    </div>
+                </div>
+
+                <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm uppercase tracking-wider transition cursor-pointer shadow-md flex items-center justify-center gap-2 mt-2">
+                    <span>Masuk ke Dashboard</span>
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>
