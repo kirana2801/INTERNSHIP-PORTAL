@@ -108,9 +108,9 @@
                 <p class="text-[10px] text-slate-400">Monitoring Absensi & Jurnal Kegiatan Magang</p>
             </div>
         </div>
-        <a href="beranda.html" class="px-3 py-1.5 bg-slate-800 text-slate-300 hover:text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 border border-slate-700">
-            <i class="fa-solid fa-house"></i> Kembali ke Beranda
-        </a>
+        <button onclick="handleLogoutAdmin()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm">
+            <i class="fa-solid fa-right-from-bracket"></i> Keluar / Logout
+        </button>
     </header>
 
     <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 flex flex-col gap-6">
@@ -209,8 +209,16 @@
     <script>
         // Cek Keamanan Hak Akses Verifikasi Admin
         if (localStorage.getItem('admin_verified') !== 'true') {
-            alert('Akses Ditolak! Anda harus memasukkan gerbang pengaman terlebih dahulu.');
-            window.location.href = 'beranda.html';
+            alert('Akses Ditolak! Anda harus login sebagai administrator terlebih dahulu.');
+            window.location.href = 'index.html';
+        }
+
+        // Fungsi Tombol Logout Khusus Admin
+        function handleLogoutAdmin() {
+            if (confirm("Apakah Anda yakin ingin keluar dari Panel Admin?")) {
+                localStorage.removeItem('admin_verified');
+                window.location.href = 'index.html';
+            }
         }
 
         // Fungsi Perpindahan Tab Menu Admin
@@ -298,7 +306,7 @@
             });
         }
 
-        // ================= SEKTOR MANAJEMEN USER CRUD CORNER =================
+        // FUNGSI LOAD DATA DAFTAR USER
         function muatSemuaUser() {
             const tbody = document.getElementById('tabelAdminUserBody');
             let usersDB = JSON.parse(localStorage.getItem('users_db')) || [];
@@ -330,7 +338,6 @@
             document.getElementById('popUsername').focus();
         }
 
-        /* Perbaikan: fungsi pisah tutup modal edit & tambah */
         function tutupModalUser() {
             document.getElementById('modalTambahUser').classList.add('hidden');
         }
@@ -361,18 +368,16 @@
             alert("✨ Berhasil!\nAkun login untuk " + namaInput + " telah sukses ditambahkan ke sistem.");
         }
 
-        // --- SISTEM KONTROL POP-UP DIALOG EDIT USER (BARU) ---
+        // --- SISTEM KONTROL POP-UP DIALOG EDIT USER ---
         function editUser(index) {
             let usersDB = JSON.parse(localStorage.getItem('users_db')) || [];
             const user = usersDB[index];
 
-            // Masukkan data lama ke dalam Input Form Modal Edit
             document.getElementById('editIndex').value = index;
             document.getElementById('editUsername').value = user.username;
             document.getElementById('editNama').value = user.nama;
             document.getElementById('editPassword').value = user.password;
 
-            // Munculkan Modal Edit
             document.getElementById('modalEditUser').classList.remove('hidden');
             document.getElementById('editNama').focus();
         }
@@ -390,7 +395,6 @@
 
             let usersDB = JSON.parse(localStorage.getItem('users_db')) || [];
 
-            // Update database lokal
             usersDB[index].nama = namaBaru || usersDB[index].nama;
             usersDB[index].password = passBaru || usersDB[index].password;
 
@@ -401,6 +405,7 @@
             alert("✨ Sukses!\nData user berhasil diperbarui!");
         }
 
+        // --- FUNGSI HAPUS USER ---
         function hapusUser(index) {
             let usersDB = JSON.parse(localStorage.getItem('users_db')) || [];
             if (usersDB[index].username === 'admin') {
@@ -415,7 +420,7 @@
             }
         }
 
-        // Fungsi Pembersih Log Total Massal
+        // --- FUNGSI MASS CLEAN DATA ---
         function hapusSemuaAbsen() {
             if (confirm("Apakah Anda yakin ingin menghapus seluruh data rekap absensi anak magang?")) {
                 localStorage.removeItem('absensi_rekap_magang');
