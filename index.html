@@ -41,14 +41,14 @@
                 <p class="text-xs text-slate-400 mt-1">Gunakan Username dan Password terdaftar Anda.</p>
             </div>
 
-            <form class="space-y-4" onsubmit="event.preventDefault(); window.location.href='beranda.html';">
+            <form class="space-y-4" onsubmit="handleLoginSystem(event)">
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Username Akun</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                             <i class="fa-solid fa-user text-sm"></i>
                         </span>
-                        <input type="text" placeholder="Masukkan username Anda" required 
+                        <input type="text" id="loginUsername" placeholder="Masukkan username Anda" required 
                             class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 bg-slate-50 focus:bg-white transition">
                     </div>
                 </div>
@@ -59,7 +59,7 @@
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                             <i class="fa-solid fa-lock text-sm"></i>
                         </span>
-                        <input type="password" placeholder="Masukkan password Anda" required 
+                        <input type="password" id="loginPassword" placeholder="Masukkan password Anda" required 
                             class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 bg-slate-50 focus:bg-white transition">
                     </div>
                 </div>
@@ -74,5 +74,32 @@
 
     </div>
 
+    <script>
+        function handleLoginSystem(event) {
+            event.preventDefault();
+            
+            const usernameInput = document.getElementById('loginUsername').value.trim();
+            const passwordInput = document.getElementById('loginPassword').value;
+
+            // Logika Percabangan Khusus Akun Admin Utama
+            if (usernameInput.toLowerCase() === 'admin') {
+                // Sesuai dengan pengaman bawaan admin.html
+                localStorage.setItem('admin_verified', 'true');
+                window.location.href = 'admin.html';
+                return;
+            }
+
+            // Logika Login Akun Anak Magang Biasa
+            let usersDB = JSON.parse(localStorage.getItem('users_db')) || [];
+            const userAktif = usersDB.find(u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput);
+
+            if (userAktif) {
+                localStorage.setItem('user_magang_aktif', JSON.stringify(userAktif));
+                window.location.href = 'beranda.html';
+            } else {
+                alert("🚨 AKSES DITOLAK!\nUsername atau password yang Anda masukkan salah.");
+            }
+        }
+    </script>
 </body>
 </html>
